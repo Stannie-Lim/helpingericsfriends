@@ -1,16 +1,33 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './Components/App';
-import { Provider } from 'react-redux';
-import store from './store';
-import { HashRouter } from 'react-router-dom';
+import React, { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import axios from "axios";
 
-const root = createRoot(document.querySelector('#root'));
+const App = () => {
+  const [userURL, setUserURL] = useState("");
+  const [isSafe, setIsSafe] = useState(null);
 
-root.render(
-  <Provider store={ store }>
-    <HashRouter>
-      <App />
-    </HashRouter>
-  </Provider>
-);
+  const checkIfSafe = async () => {
+    const { data } = await axios.post("/isThisSafe", { userURL });
+    console.log(data);
+  };
+
+  return (
+    <>
+      <input
+        value={userURL}
+        onChange={({ target: { value } }) => setUserURL(value)}
+      />
+      <button onClick={checkIfSafe}>Is this safe?</button>
+      {isSafe === true
+        ? "Yes this is safe"
+        : isSafe === false
+        ? "No this is not safe"
+        : "Type in a URL"}
+    </>
+  );
+};
+
+const root = createRoot(document.querySelector("#root"));
+
+root.render(<App />);
